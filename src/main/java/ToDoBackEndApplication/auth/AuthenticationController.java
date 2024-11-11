@@ -35,15 +35,15 @@ public class AuthenticationController {
     public ResponseEntity<?> login (
             @RequestBody AuthenticationRequest request) {
         AuthenticationResponse response = service.login(request);
-            if(response != null) {
-                return ResponseEntity.ok(response);
-            }else{
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .body(ResponseUnathorizedDto.builder()
-                        .message("Las credenciales son incorrectas")
-                        .status(HttpStatus.UNAUTHORIZED.value()).build());
-            }
+        if(response != null) {
+            return ResponseEntity.ok(response);
+        }else{
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(ResponseUnathorizedDto.builder()
+                            .message("Las credenciales son incorrectas")
+                            .status(HttpStatus.UNAUTHORIZED.value()).build());
+        }
     }
 
 }
