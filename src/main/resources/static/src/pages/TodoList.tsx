@@ -1,5 +1,3 @@
-// pages/TodoList.tsx
-
 import React, { useState } from 'react';
 import useTodos from '../hooks/useTodos';
 import styles from '../styles/TodoList.module.css';
@@ -7,33 +5,49 @@ import styles from '../styles/TodoList.module.css';
 const TodoList: React.FC = () => {
     const { todos, loading, error, addTodo, deleteTodo, updateTodo } = useTodos();
     const [newTodo, setNewTodo] = useState<string>('');
+    const [showInput, setShowInput] = useState<boolean>(false);  // Estado para mostrar el input de creación de nuevo ToDo
 
     const handleAddTodo = () => {
         if (newTodo.trim()) {
             addTodo(newTodo);
             setNewTodo('');
+            setShowInput(false); // Ocultar el input después de agregar el ToDo
         }
     };
 
     return (
         <div className={styles.container}>
-            <h2>Lista de ToDos</h2>
+            <h2>{todos.length === 0 ? 'To-Do' : 'Lista de ToDos'}</h2>
 
-            <div className={styles.inputContainer}>
-                <input
-                    type="text"
-                    placeholder="Nuevo ToDo"
-                    value={newTodo}
-                    onChange={(e) => setNewTodo(e.target.value)}
-                />
-                <button onClick={handleAddTodo}>Agregar</button>
-            </div>
+            {/* Mostrar mensaje cuando no hay ToDos */}
+            {todos.length === 0 ? (
+                <>
+                    <p>You don't have any todo created at the moment.</p>
+                    <p>
+                        If you want to create a Todo,{' '}
+                        <span
+                            className={styles.createTodoLink}
+                            onClick={() => setShowInput(true)}  // Muestra el input de creación de nuevo todo
+                        >
+                            click here
+                        </span>
+                    </p>
 
-            {loading ? (
-                <p>Cargando ToDos...</p>
-            ) : error ? (
-                <p>{error}</p>
+                    {/* Input para agregar un nuevo ToDo */}
+                    {showInput && (
+                        <div className={styles.inputContainer}>
+                            <input
+                                type="text"
+                                placeholder="Nuevo ToDo"
+                                value={newTodo}
+                                onChange={(e) => setNewTodo(e.target.value)}
+                            />
+                            <button onClick={handleAddTodo}>Agregar</button>
+                        </div>
+                    )}
+                </>
             ) : (
+                // Mostrar los ToDos si existen
                 <ul className={styles.todoList}>
                     {todos.map(todo => (
                         <TodoItem
@@ -45,6 +59,10 @@ const TodoList: React.FC = () => {
                     ))}
                 </ul>
             )}
+
+            {/* Mostrar estado de carga o error */}
+            {loading && <p>Cargando ToDos...</p>}
+            {error && <p>{error}</p>}
         </div>
     );
 };

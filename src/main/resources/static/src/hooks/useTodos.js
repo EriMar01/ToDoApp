@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
-const apiUrl = 'http://localhost:8081/api/todos';
+const apiUrl = 'http://localhost:8081/api/todos/user/';
 
 const useTodos = () => {
     const [todos, setTodos] = useState([]);
@@ -13,7 +13,7 @@ const useTodos = () => {
         const fetchTodos = async () => {
             setLoading(true);
             try {
-                const response = await axios.get(apiUrl);
+                const response = await axios.get(apiUrl); //`${apiUrl}/${id}`
                 setTodos(response.data);
             } catch (err) {
                 setError('Error al obtener los ToDos');

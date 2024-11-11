@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from '../styles/Register.module.css';
 
 export default function Register() {
@@ -8,22 +9,42 @@ export default function Register() {
         email: '',
         password: ''
     });
+    const [error, setError] = useState<string>('');  // Estado para manejar el error
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await fetch('http://localhost:8081/api/users', {
+            const response = await fetch('http://localhost:8081/auth/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData),
             });
+
+            if (response.ok) {
+                // Si el registro es exitoso, redirigir a TodoList
+                navigate('/todos'); // Cambiar a la ruta de tu TodoList
+            } else {
+                // Si la respuesta indica un error, comprobar el contenido del error
+                const data = await response.json();
+                if (data.message === 'Account already exists') {
+                    setError('The account cannot be created because an account associated with that email already exists');
+                } else {
+                    setError('Registration failed. Please try again.');
+                }
+            }
         } catch (error) {
             console.error("Registration failed:", error);
+            setError('An error occurred. Please try again.');
         }
     };
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleGoToLogin = () => {
+        navigate('/login'); // Redirige al login
     };
 
     return (
@@ -72,6 +93,12 @@ export default function Register() {
                 </div>
                 <button type="submit" className={styles.registerButton}>Register</button>
             </form>
+
+            {error && <p className={styles.errorMessage}>{error}</p>}  {/* Mostrar el mensaje de error */}
+
+            <button onClick={handleGoToLogin} className={styles.goToLoginButton}>
+                Go to Login
+            </button>
         </div>
     );
 }
