@@ -62,3 +62,28 @@
 .todoItem button:nth-child(3) {
     background-color: #dc3545;
 }
+
+/* Estilos para el botón "click here" */
+.createTodoButton {
+    background-color: #008CBA; /* Color similar a un enlace, pero con fondo */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    text-align: center;
+    cursor: pointer;
+    font-weight: bold;
+    text-transform: uppercase;
+    border-radius: 4px;
+    margin-top: 20px;
+    display: inline-block;
+}
+
+.createTodoButton:hover {
+    background-color: #005f7a; /* Color más oscuro cuando se pasa el ratón */
+}
+
+.createTodoButton:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.5);
+}

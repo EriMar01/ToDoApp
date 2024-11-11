@@ -11,12 +11,14 @@ export default function useAuth() {
                 body: JSON.stringify({ email, password }),
             });
             const data = await response.json();
-            if (data.token) {
-                localStorage.setItem('token', data.token);
+            if (data.jwt) {
+                localStorage.setItem('token', data.jwt);
                 setUser(data.user);
+                return true;
             }
         } catch (error) {
             console.error("Login failed:", error);
+            return false;
         }
     };
 

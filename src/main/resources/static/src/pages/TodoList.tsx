@@ -22,16 +22,21 @@ const TodoList: React.FC = () => {
             {/* Mostrar mensaje cuando no hay ToDos */}
             {todos.length === 0 ? (
                 <>
-                    <p>You don't have any todo created at the moment.</p>
-                    <p>
-                        If you want to create a Todo,{' '}
-                        <span
-                            className={styles.createTodoLink}
-                            onClick={() => setShowInput(true)}  // Muestra el input de creación de nuevo todo
-                        >
-                            click here
-                        </span>
-                    </p>
+                    {/* Condicional para ocultar los textos si se ha hecho clic en el botón */}
+                    {!showInput && (
+                        <>
+                            <p>You don't have any todo created at the moment.</p>
+                            <p>
+                                If you want to create a Todo,{' '}
+                                <button
+                                    className={styles.createTodoButton}
+                                    onClick={() => setShowInput(true)}  // Muestra el input de creación de nuevo todo
+                                >
+                                    click here
+                                </button>
+                            </p>
+                        </>
+                    )}
 
                     {/* Input para agregar un nuevo ToDo */}
                     {showInput && (
