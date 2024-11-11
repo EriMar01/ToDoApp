@@ -3,6 +3,7 @@ import axios from 'axios';
 
 // Cambiar la URL base para incluir el userId dinámicamente
 const apiUrl = 'http://localhost:8081/api/todos/user/';
+const apiUrlAdd ='http://localhost:8081/api/todos';
 
 const useTodos = (userId) => {
     const [todos, setTodos] = useState([]);
@@ -11,13 +12,23 @@ const useTodos = (userId) => {
 
     // Obtener todos los ToDos para un usuario específico
     useEffect(() => {
-        if (!userId) return;  // No hacer la petición si no hay userId
-
         const fetchTodos = async () => {
             setLoading(true);
+            const token = localStorage.getItem('token');
+            const userId = localStorage.getItem('userId');
             try {
-                const response = await axios.get(`${apiUrl}1`);
-                setTodos(response.data);  // Asumimos que la respuesta es una lista de ToDos
+                const response = await axios.get(`${apiUrl}${userId}`,{
+                    headers: {
+                        'Authorization': token ? `Bearer ${token}` : '',
+                    },
+                });
+                // Validar la estructura de la respuesta
+                if (Array.isArray(response.data)) {
+                    setTodos(response.data);
+                } else {
+                    console.error('La respuesta no es un arreglo:', response.data);
+                    setTodos([]);  // Establecer un arreglo vacío si la respuesta no es válida
+                }
             } catch (err) {
                 setError('Error al obtener los ToDos');
             } finally {
@@ -29,12 +40,23 @@ const useTodos = (userId) => {
     }, [userId]); // Volver a ejecutar la solicitud si el userId cambia
 
     // Agregar un nuevo ToDo
-    const addTodo = async (title) => {
-        if (!title.trim()) return;
+    const addTodo = async (title, description) => {
+        if (!title.trim() && !description.trim()) return;
+        const token = localStorage.getItem('token');
+        const userId = localStorage.getItem('userId');
         try {
-            const response = await axios.post(`${apiUrl}${userId}`, { title });
+            const response = await axios.post(`${apiUrlAdd}`, {
+                title, // Enviar el título
+                description, // Enviar la descripción
+                userId, // Enviar el userId
+            },{
+                headers: {
+                    'Authorization': token ? `Bearer ${token}` : '',
+                },
+            });
             setTodos([...todos, response.data]);
         } catch (err) {
+            console.log(err)
             setError('Error al agregar el ToDo');
         }
     };

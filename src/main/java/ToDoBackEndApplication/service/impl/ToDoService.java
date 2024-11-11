@@ -56,14 +56,14 @@ public class ToDoService implements IToDoService {
 
 
     @Override
-    public ResponseEntity<Optional <ToDo>> getToDoByUser(String userId) {
+    public ResponseEntity<List <ToDo>> getToDoByUser(String userId) {
         // Verificamos que el userId no sea nulo o vacío
         if (userId == null || userId.isEmpty()) {
             throw new InvalidDataException("El userId no puede estar vacío.");
         }
 
         // Buscamos todos los ToDo asociados a este userId
-        Optional<ToDo> todos = todoRepository.findByUserId(userId);
+        List<ToDo> todos = todoRepository.findByUserId(userId);
 
         // Si no hay ToDos, lanzamos una excepción de recurso no encontrado
         if (todos.isEmpty()) {

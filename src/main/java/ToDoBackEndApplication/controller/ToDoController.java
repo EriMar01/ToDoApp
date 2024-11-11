@@ -24,7 +24,7 @@ public class ToDoController {
     }
 
     @GetMapping("/todos/user/{userId}")
-    public ResponseEntity<Optional<ToDo>> getTodosByUser(@PathVariable String userId) {
+    public ResponseEntity<List<ToDo>> getTodosByUser(@PathVariable String userId) {
         return toDoService.getToDoByUser(userId);
     }
     @PostMapping("/todos")

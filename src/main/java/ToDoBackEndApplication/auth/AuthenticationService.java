@@ -58,13 +58,17 @@ public class AuthenticationService {
         } catch (AuthenticationException e) {
             return null;
         }
-        var user = (UserDetails) repository.findByEmail(request.getEmail()).get();
 
-        // Genera el token JWT
-        var jwtToken = jwtService.generateToken(user);
+
+        var user = repository.findByEmail(request.getEmail()).get();
+
+        var userDetail = (UserDetails) user;
+                // Genera el token JWT
+        var jwtToken = jwtService.generateToken(userDetail);
 
         return AuthenticationResponse.builder()
                 .jwt(jwtToken)
+                .userId(user.getId())
                 .build();
     }
 }

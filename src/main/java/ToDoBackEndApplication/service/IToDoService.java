@@ -12,7 +12,7 @@ public interface IToDoService {
 
     ToDo createToDo(ToDo toDo);
 
-    ResponseEntity<Optional<ToDo>> getToDoByUser(String userId);
+    ResponseEntity<List<ToDo>> getToDoByUser(String userId);
 
     ResponseEntity<ToDo> getToDoById(String id);
 

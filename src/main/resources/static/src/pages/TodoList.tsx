@@ -1,16 +1,23 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import useTodos from '../hooks/useTodos';
 import styles from '../styles/TodoList.module.css';
 
 const TodoList: React.FC = () => {
     const { todos, loading, error, addTodo, deleteTodo, updateTodo } = useTodos();
     const [newTodo, setNewTodo] = useState<string>('');
+    const [descriptionTodo, setDescriptionTodo] = useState<string>('');
     const [showInput, setShowInput] = useState<boolean>(false);  // Estado para mostrar el input de creación de nuevo ToDo
 
+    // useEffect(() => {
+    //     // Si deseas hacer algo adicional cuando se monte la página
+    //     console.log('Página de ToDos cargada');
+    // }, []);
+
     const handleAddTodo = () => {
-        if (newTodo.trim()) {
-            addTodo(newTodo);
+        if (newTodo.trim() && descriptionTodo.trim()) {
+            addTodo(newTodo, descriptionTodo);
             setNewTodo('');
+            setDescriptionTodo('');
             setShowInput(false); // Ocultar el input después de agregar el ToDo
         }
     };
@@ -27,7 +34,7 @@ const TodoList: React.FC = () => {
                         <>
                             <p>You don't have any todo created at the moment.</p>
                             <p>
-                                If you want to create a Todo,{' '}
+                                title, descriptionTodo: stringIf you want to create a Todo,{' '}
                                 <button
                                     className={styles.createTodoButton}
                                     onClick={() => setShowInput(true)}  // Muestra el input de creación de nuevo todo
@@ -47,22 +54,58 @@ const TodoList: React.FC = () => {
                                 value={newTodo}
                                 onChange={(e) => setNewTodo(e.target.value)}
                             />
+                            <input
+                                type="text"
+                                placeholder="Descripción"
+                                value={descriptionTodo}
+                                onChange={(e) => setDescriptionTodo(e.target.value)}
+                            />
                             <button onClick={handleAddTodo}>Agregar</button>
                         </div>
                     )}
                 </>
             ) : (
+
                 // Mostrar los ToDos si existen
-                <ul className={styles.todoList}>
-                    {todos.map(todo => (
-                        <TodoItem
-                            key={todo.id}
-                            todo={todo}
-                            onDelete={deleteTodo}
-                            onUpdate={updateTodo}
-                        />
-                    ))}
-                </ul>
+                <>
+
+                    <ul className={styles.todoList}>
+                        {todos.map(todo => (
+                            <TodoItem
+                                key={todo.id}
+                                todo={todo}
+                                onDelete={deleteTodo}
+                                onUpdate={updateTodo}
+                            />
+                        ))}
+                    </ul>
+                    <button
+                        className={styles.createTodoButton}
+                        onClick={() => setShowInput(true)}  // Muestra el input de creación de nuevo todo
+                    >
+                        Add new ToDo
+                    </button>
+
+                    {/* Input para agregar un nuevo ToDo */}
+                    {showInput && (
+                        <div className={styles.inputContainer}>
+                            <input
+                                type="text"
+                                placeholder="Nuevo ToDo"
+                                value={newTodo}
+                                onChange={(e) => setNewTodo(e.target.value)}
+                            />
+                            <input
+                                type="text"
+                                placeholder="Descripción"
+                                value={descriptionTodo}
+                                onChange={(e) => setDescriptionTodo(e.target.value)}
+                            />
+                            <button onClick={handleAddTodo}>Agregar</button>
+                        </div>
+                    )}
+                </>
+
             )}
 
             {/* Mostrar estado de carga o error */}

@@ -11,9 +11,10 @@ export default function useAuth() {
                 body: JSON.stringify({ email, password }),
             });
             const data = await response.json();
+            console.log(data.jwt)
             if (data.jwt) {
                 localStorage.setItem('token', data.jwt);
-                setUser(data.user);
+                localStorage.setItem('userId', data.userId);
                 return true;
             }
         } catch (error) {
