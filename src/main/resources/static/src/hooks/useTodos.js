@@ -1,63 +1,62 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { environment } from '../config/environment';
 
-const api = axios.create({
-    baseURL: environment.apiUrl,
-});
+const apiUrl = 'http://localhost:8081/api/todos';
 
-// Interceptor para agregar el token en el header de cada solicitud si está presente
-api.interceptors.request.use((config) => {
-    const token = localStorage.getItem('todo_token');
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-});
-
-// Hook personalizado para manejar las tareas (todos)
-export const useTodos = (userId) => {
+const useTodos = () => {
     const [todos, setTodos] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    // Función para obtener las tareas desde la API
-    const fetchTodos = useCallback(async () => {
-        try {
-            setLoading(true);
-            const { data } = await api.get('/api/todos');
-            setTodos(data.data.todos);
-            setError(null);
-        } catch (err) {
-            setError('No se pudieron obtener las tareas');
-        } finally {
-            setLoading(false);
-        }
-    }, []);
-
-    // Función para crear una nueva tarea
-    const createTodo = useCallback(async (todo) => {
-        try {
-            const { data } = await api.post('/api/todos', todo);
-            setTodos((prev) => [...prev, data.data.todo]);
-            return data.data.todo;
-        } catch (err) {
-            throw new Error('No se pudo crear la tarea');
-        }
-    }, []);
-
-    // Llamada a fetchTodos al cambiar el userId
+    // Obtener todos los ToDos
     useEffect(() => {
-        if (userId) {
-            fetchTodos();
-        }
-    }, [userId, fetchTodos]);
+        const fetchTodos = async () => {
+            setLoading(true);
+            try {
+                const response = await axios.get(apiUrl);
+                setTodos(response.data);
+            } catch (err) {
+                setError('Error al obtener los ToDos');
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchTodos();
+    }, []);
 
-    return {
-        todos,
-        loading,
-        error,
-        createTodo,
-        refreshTodos: fetchTodos,
+    // Agregar un nuevo ToDo
+    const addTodo = async (title) => {
+        if (!title.trim()) return;
+        try {
+            const response = await axios.post(apiUrl, { title });
+            setTodos([...todos, response.data]);
+        } catch (err) {
+            setError('Error al agregar el ToDo');
+        }
     };
+
+    // Eliminar un ToDo
+    const deleteTodo = async (id) => {
+        try {
+            await axios.delete(`${apiUrl}/${id}`);
+            setTodos(todos.filter(todo => todo.id !== id));
+        } catch (err) {
+            setError('Error al eliminar el ToDo');
+        }
+    };
+
+    // Actualizar un ToDo
+    const updateTodo = async (id, updatedTitle) => {
+        if (!updatedTitle.trim()) return;
+        try {
+            const response = await axios.put(`${apiUrl}/${id}`, { title: updatedTitle });
+            setTodos(todos.map(todo => (todo.id === id ? response.data : todo)));
+        } catch (err) {
+            setError('Error al actualizar el ToDo');
+        }
+    };
+
+    return { todos, loading, error, addTodo, deleteTodo, updateTodo };
 };
+
+export default useTodos;
